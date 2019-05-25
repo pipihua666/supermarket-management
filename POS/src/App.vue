@@ -4,9 +4,12 @@
     <leftNav></leftNav>
 
     <!-- 主内容区域 -->
-    <main class="main">
-      <router-view/>
-    </main>
+    <transition name="fade" mode="out-in">
+      <main class="main">
+        <router-view/>
+      </main>
+    </transition>
+
 
   </div>
 </template>
@@ -23,7 +26,7 @@ export default {
 
 <style lang="scss">
   #app{
-    height: 99.5vh;
+    height: 100vh;
     width: 100vw;
   }
   .main{

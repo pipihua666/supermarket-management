@@ -1,15 +1,17 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-//引用bodyParser 这个不要忘了写
+
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 //设置跨域访问
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("Content-Type", "application/json;charset=utf-8");
+    res.header("Cache-Control", "privte");
     next();
 });
 let oftenGoods=[{
@@ -129,6 +131,7 @@ let typeGoods = [
     }
     ]
 ];
+let reqData=[];
 //写两个接口
 app.get('/oftenGoods', function (req, res) {
     res.status(200);
@@ -141,12 +144,13 @@ app.get('/typeGoods',function(req,res){
 app.get('/foodImages/*',function(req,res){
     res.sendFile(__dirname + "/" + req.url);
 })
+app.post('/postData',function (req,res){
+    reqData=reqData.concat(req.body);
+    console.log(reqData);
+    res.status(200).json(reqData);
+})
 //配置服务端口
 var server = app.listen(3001, function () {
-
-    var host = server.address().address;
-
     var port = server.address().port;
-
-    console.log('Example app listening at http://%s:%s', host, port);
+    console.log('Example app listening at http://localhost:%s', port);
 })
