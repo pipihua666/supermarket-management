@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 //设置跨域访问
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Content-length,Authorrization,Accept,X-Requested-With,yourHeaderFeild");
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("Content-Type", "application/json;charset=utf-8");
     res.header("Cache-Control", "privte");
@@ -145,7 +145,7 @@ app.get('/foodImages/*',function(req,res){
     res.sendFile(__dirname + "/" + req.url);
 })
 app.post('/postData',function (req,res){
-    reqData=reqData.concat(req.body);
+    reqData.push(req.body);
     console.log(reqData);
     res.status(200).json(reqData);
 })

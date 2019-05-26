@@ -106,54 +106,70 @@
         <div id="goods-type">
           <el-tabs>
             <el-tab-pane label='套餐'>
-              <ul class="goods-list">
+              <ul class="type-goods-list">
                 <li
                   v-for="item of setMeal"
                   :key="item.goodsId"
                   @click="addTableData(item)"
                 >
-                  <span class="goods-image"><img :src="item.goodsImg"></span>
-                  <span class="goods-name">{{item.goodsName}}</span>
-                  <span class="goods-price">{{item.price|filterCompany}}</span>
+                  <div class="image">
+                    <img :src="item.goodsImg">
+                  </div>
+                  <div class="goods">
+                    <span class="goods-name">{{item.goodsName}}</span>
+                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                  </div>
                 </li>
               </ul>
             </el-tab-pane>
             <el-tab-pane label='小吃'>
-              <ul class="goods-list">
+              <ul class="type-goods-list">
                 <li
                   v-for="item of snakes"
                   :key="item.goodsId"
                   @click="addTableData(item)"
                 >
-                  <span class="goods-image"><img :src="item.goodsImg"></span>
-                  <span class="goods-name">{{item.goodsName}}</span>
-                  <span class="goods-price">{{item.price|filterCompany}}</span>
+                  <div class="image">
+                    <span class="goods-image"><img :src="item.goodsImg"></span>
+                  </div>
+                  <div class="goods">
+                    <span class="goods-name">{{item.goodsName}}</span>
+                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                  </div>
                 </li>
               </ul>
             </el-tab-pane>
             <el-tab-pane label='饮料'>
-              <ul class="goods-list">
+              <ul class="type-goods-list">
                 <li
                   v-for="item of drinks"
                   :key="item.goodsId"
                   @click="addTableData(item)"
                 >
-                  <span class="goods-image"><img :src="item.goodsImg"></span>
-                  <span class="goods-name">{{item.goodsName}}</span>
-                  <span class="goods-price">{{item.price|filterCompany}}</span>
+                  <div class="image">
+                    <span class="goods-image"><img :src="item.goodsImg"></span>
+                  </div>
+                  <div class="goods">
+                    <span class="goods-name">{{item.goodsName}}</span>
+                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                  </div>
                 </li>
               </ul>
             </el-tab-pane>
             <el-tab-pane label='特价'>
-              <ul class="goods-list">
+              <ul class="type-goods-list">
                 <li
                   v-for="item of specialOffer"
                   :key="item.goodsId"
                   @click="addTableData(item)"
                 >
-                  <span class="goods-image"><img :src="item.goodsImg"></span>
-                  <span class="goods-name">{{item.goodsName}}</span>
-                  <span class="goods-price">{{item.price|filterCompany}}</span>
+                  <div class="image">
+                    <span class="goods-image"><img :src="item.goodsImg"></span>
+                  </div>
+                  <div class="goods">
+                    <span class="goods-name">{{item.goodsName}}</span>
+                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                  </div>
                 </li>
               </ul>
             </el-tab-pane>
@@ -239,25 +255,31 @@ export default {
     checkout() {
       const len = this.tableData.length;
       if (len !== 0) {
-        axios.post('http://localhost:3001/postData',{
-          data:this.tableData,
-          headers:{
-            'Origin':'http://localhost:8080',
-            'X-requested-with':'XMLHttpRequest',
-            'Content-Type':'application/json'
-          }
-        }).then((response)=>{
-          let res=JSON.parse(response);
-          this.$message({
-            message:res,
-            type:seccess
+        let params = new URLSearchParams();
+        params.append("content", this.tableData);
+        axios
+          .post(
+            "http://localhost:3001/postData",
+            {
+              data: this.tableData
+            },
+            {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            }
+          )
+          .then(response => {
+            this.tableData = [];
+            console.log(response);
+            this.$message({
+              message: "结账成功",
+              type: "success"
+            });
+          })
+          .catch(error => {
+            this.$message.error(error);
           });
-        }).catch((error)=>{this.$message.error(error)})
-        this.tableData = [];
-        // this.$message({
-        //   message: "结账成功！",
-        //   type: "success"
-        // });
       } else {
         this.$message({
           message: "你还没添加商品呢！",
@@ -285,7 +307,7 @@ export default {
               return prev + cur;
             });
             count = sums[index];
-            sums[index] += "元";
+            sums[index] += "个";
           }
           return;
         } else if (index === 2) {
@@ -371,43 +393,55 @@ export default {
   padding-left: 0.625rem;
   padding-top: 10px;
 }
-#goods-type {
-  clear: left;
-  ul li {
-    list-style: none;
-    width: 23%;
-    border: 1px solid #e5e9f2;
-    overflow: hidden;
-    background-color: #fff;
-    padding: 0.25rem;
-    float: left;
-    margin: 0.25rem;
-    span {
-      display: block;
-      float: left;
-    }
-  }
-}
-.goods-image img {
-  width: 7rem;
-  height: 7rem;
-}
 .goods-name {
   font-size: 1.2rem;
   padding-left: 0.8rem;
   color: brown;
 }
-.often-goods-list {
+.image img{
+  max-width: 14rem;
+  height: 8rem;
+}
+.often-goods-list 
+{
+  height: 16rem;
+  overflow: auto;
+  ul{
+    display: flex;
+    justify-content:  center;
+    flex-wrap: wrap;
+    li {
+      flex: 0 1 auto;
+      width: 20%;
+      display: block;
+      list-style: none;
+      border: 1px solid #e5e9f2;
+      padding: 1.5rem;
+      margin: 0.5rem;
+      background-color: #fff;
+    }
+  }
+}
+.type-goods-list{
   display: flex;
-  flex: 1;
-  justify-content: center;
-  ul li {
-    display: inline-block;
+  justify-content: flex-start;
+  li{
+    display: flex;
+    flex:0 1 auto;
+    justify-content: center;
     list-style: none;
     border: 1px solid #e5e9f2;
-    padding: 1.5rem;
-    margin: 0.5rem;
     background-color: #fff;
+    margin: .5rem;
+    flex-wrap: wrap;  //屏幕缩小的时候就会自动换行
+    .goods{
+      line-height: 2rem;
+      margin-right: 1rem;
+      flex:0 1 auto; 
+    }
+    span{
+      display: block;
+    }
   }
 }
 </style>
