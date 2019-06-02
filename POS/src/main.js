@@ -6,9 +6,11 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import lottie from 'vue-lottie'
+import axios from 'axios'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
+Vue.prototype.$ajax = axios
 Vue.component('lottie',lottie);
 
 /* eslint-disable no-new */

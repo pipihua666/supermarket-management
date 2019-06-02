@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    
     <!-- 左侧导航 -->
     <leftNav></leftNav>
 
@@ -9,7 +10,6 @@
         <router-view/>
       </main>
     </transition>
-
 
   </div>
 </template>

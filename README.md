@@ -15,7 +15,6 @@ npm install
 ** serve with hot reload at localhost:8080
 npm run dev
 
-** 如果你想使用结账功能，请打开本地的Node-API下的server.js服务
 
 ```
 
@@ -33,6 +32,8 @@ npm run dev
 
 ## 使用到的组件库：Element-ui
 
+## 使用到的npm包：js-cookie
+
 ## 使用到的图标库：阿里的iconfont
 
 ## 检查本地node接口：Postman
@@ -47,7 +48,7 @@ npm run dev
 
 
 
-# 开发中遇到的坑:
+# 开发中学习到的经验:
 
 ```
     **  给pos-left栏设置样式！因为pos栏使用的是<el-col>是个虚拟DOM，需要通过在构造器里使用js修改VDOM的样式,也可以通过.el-col选择器选择。
@@ -67,5 +68,26 @@ npm run dev
 
     **  :summary-method又踩坑了，由于没有判断tableData数组是否存在值才进行求和求积运算，所以报错了，可恶~！官方给出的方法是Number转化每一列单的每一项，然后通过every(isNaN(item))判断是否存在数值，然而我想简单点，直接使用every遍历typeof item==='number'，又报错？？？我发现，如果数组是空数组，every会想当然的觉得自己遍历完了每一项，然后默认返回true，这时就需要some了，some会很努力的去遍历每一项，直到发现符合自己条件的才放弃。
 
+    **  goods页面点击编辑按钮将一行的数据传入dialog？？？
+
+    **  goods页面点击删除按钮显示el-popover，再确认是否删除数据，但是el-popover只会挂载到一个button上,怎么让多个button挂载一个popover？？？
+
+    **  向<el-date-picker>传值的时候默认格式为：2017-10-01，中间不能加空格，不然picker不会显示出来哦!
+
+    **  通过session-storige实现本地存储（updating）
+
+    **  通过设置cookie和session，加上vue-router提供的导航守卫配合路由重定向，实现登陆页面的设置：（updating）
+        1. 如果没有登陆则重定向到登陆页面，如果登陆了则可以之间访问网页.
+        2. 相应的文件(/build/utils.js封装自己的cookie函数，@/components/common/login.vue设置登陆组件,@router/login这是导航守卫)
+        3. 使用了js-cookie中间件
+    ** goods页面实现分页（updating）
+```
+
+#使用注意点
+
+```
+    ** POS购物页面：如果你想使用POS页面下的结账功能，请打开本地的Node-API下的posAPI.js服务
+
+    ** Goods商品管理页面:功能正在完善
 
 ```

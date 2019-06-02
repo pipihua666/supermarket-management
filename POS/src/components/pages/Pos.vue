@@ -1,5 +1,5 @@
 <template>
-  <div class="pos">
+  <div id="pos">
     <el-row
       type='flex'
       justify='space-between'
@@ -181,9 +181,8 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
-  name: "pos",
+  name: "Pos",
   data() {
     return {
       tableData: [], //pos数据
@@ -255,9 +254,9 @@ export default {
     checkout() {
       const len = this.tableData.length;
       if (len !== 0) {
-        let params = new URLSearchParams();
-        params.append("content", this.tableData);
-        axios
+        // let params = new URLSearchParams();
+        // params.append("content", this.tableData);
+        this.$ajax
           .post(
             "http://localhost:3001/postData",
             {
@@ -288,7 +287,7 @@ export default {
       }
     },
     getSummaries(param) {
-      const { columns, data } = param; //culumns是table的所有列名，data是table的所有数据
+      const { columns, data } = param; //culumns是table的所有列，data是table的所有数据
       const sums = [];
       let count = 0;
       columns.forEach((column, index) => {
@@ -296,15 +295,15 @@ export default {
           sums[index] = "总价";
           return; //在forEach中相当于break，退出当前循环，进入下一列
         } else if (index === 1) {
-          let values = data.map(item => {
-            return Number(item[column.property]); //官方判断数组有没有值得方法
+          let values = data.map(item => {  //遍历data的一列
+            return Number(item[column.property]); //列的属性就是列的名字
           });
-          const isHave = values.every(item => {
+          const isHave = values.every(item => {//判断是否有非数字
             return isNaN(item);
           });
-          if (!isHave) {
+          if (!isHave) { //如果没有非数字
             sums[index] = values.reduce((prev, cur) => {
-              return prev + cur;
+              return prev + cur;//
             });
             count = sums[index];
             sums[index] += "个";
@@ -312,10 +311,10 @@ export default {
           return;
         } else if (index === 2) {
           let result = data.map(item => {
-            return item[column.property];
+            return item[column.property]; //相应列的列名
           });
           const isHave = result.some(item => {
-            //我的方法
+            //我的方法(只要有一个数字)
             return typeof item === "number";
           });
           if (isHave) {
@@ -332,22 +331,22 @@ export default {
     }
   },
   created() {
-    axios
+    this.$ajax
       .get(
         "https://www.easy-mock.com/mock/5ce5183882fc6a74749c302f/pos/oftenGoods"
       )
-      //   axios.get('http://localhost:3001/oftenGoods')
+      //   this.$ajax.get('http://localhost:3001/oftenGoods')
       .then(response => {
         this.oftenGoods = response.data;
       })
       .catch(error => {
-        alert(error);
+        this.$message.error(error.message);
       });
-    axios
+    this.$ajax
       .get(
         "https://www.easy-mock.com/mock/5ce5183882fc6a74749c302f/pos/typeGoods"
       )
-      //   axios.get("http://localhost:3001/typeGoods")
+      //   this.$ajax.get("http://localhost:3001/typeGoods")
       .then(response => {
         this.snakes = response.data[0];
         this.setMeal = response.data[1];
@@ -355,7 +354,7 @@ export default {
         this.specialOffer = response.data[3];
       })
       .catch(error => {
-        alert(error);
+        this.$message.error(error.message);
       });
   },
   mounted: function() {
@@ -365,7 +364,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #pos-left {
   background-color: white;
 }
@@ -398,17 +397,16 @@ export default {
   padding-left: 0.8rem;
   color: brown;
 }
-.image img{
+.image img {
   max-width: 14rem;
   height: 8rem;
 }
-.often-goods-list 
-{
+.often-goods-list {
   height: 16rem;
   overflow: auto;
-  ul{
+  ul {
     display: flex;
-    justify-content:  center;
+    justify-content: center;
     flex-wrap: wrap;
     li {
       flex: 0 1 auto;
@@ -422,24 +420,24 @@ export default {
     }
   }
 }
-.type-goods-list{
+.type-goods-list {
   display: flex;
   justify-content: flex-start;
-  li{
+  li {
     display: flex;
-    flex:0 1 auto;
+    flex: 0 1 auto;
     justify-content: center;
     list-style: none;
     border: 1px solid #e5e9f2;
     background-color: #fff;
-    margin: .5rem;
-    flex-wrap: wrap;  //屏幕缩小的时候就会自动换行
-    .goods{
+    margin: 0.5rem;
+    flex-wrap: wrap; //屏幕缩小的时候就会自动换行
+    .goods {
       line-height: 2rem;
       margin-right: 1rem;
-      flex:0 1 auto; 
+      flex: 0 1 auto;
     }
-    span{
+    span {
       display: block;
     }
   }

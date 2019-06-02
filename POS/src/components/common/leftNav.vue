@@ -2,7 +2,7 @@
   <nav class="left-nav">
     <ul>
       <li>
-        <router-link to='/'>
+        <router-link to='/index'>
           <i class="iconfont icon-shouye"></i>
           <div>首页</div>
         </router-link>
@@ -49,8 +49,6 @@ export default {};
   font-size: 1rem;
   background-color: rgba(0, 120, 215, 0.5);
   height: 100%;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
   ul {
     li {
       list-style: none;
@@ -60,8 +58,9 @@ export default {};
       cursor: pointer;
       opacity: 0.5;
       transition: all 0.1s linear;
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
+      // border-top-right-radius: 10px;
+      // border-bottom-right-radius: 10px;
+      border-radius: 1rem;
       &:hover {
         font-size: 2rem;
         background-color: rgba(0, 120, 215, 0.7);

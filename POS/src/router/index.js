@@ -6,6 +6,7 @@ import Goods from '@/components/pages/Goods'
 import User from '@/components/pages/User'
 import Help from '@/components/pages/Help'
 import error from '@/components/common/error'
+import Login from '@/components/common/login'
 
 Vue.use(Router)
 
@@ -14,10 +15,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Index',
-      component: Index,
-      alias:'/index',
-      redirect:'/pos'
+      name: 'Login',
+      component: Login,
+      alias:'/login',
     },
     {
       path:'/pos',
@@ -38,6 +38,11 @@ export default new Router({
       path:'/help',
       name:'Help',
       component:Help
+    },
+    {
+      path:'/index',
+      name:'Index',
+      component:Index
     },
     {
       path:'*',
