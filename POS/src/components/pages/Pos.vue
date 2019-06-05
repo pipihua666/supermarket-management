@@ -10,7 +10,7 @@
         id="pos-left"
       >
         <el-tabs type='card'>
-          <el-tab-pane label="点餐">
+          <el-tab-pane label="结账">
             <el-table
               border
               style="width:100%"
@@ -31,7 +31,7 @@
                 width="80"
               ></el-table-column>
               <el-table-column
-                prop='price'
+                prop='goodsPrice'
                 label='价格'
                 width="80"
               ></el-table-column>
@@ -75,7 +75,7 @@
               <el-button
                 type='success'
                 plain
-                @click.stop="checkout"
+                @click.stop="checkout"  
               >结账</el-button>
             </div>
           </el-tab-pane>
@@ -98,17 +98,17 @@
                 @click="addTableData(item)"
               >
                 <span>{{item.goodsName}}</span>
-                <span class="goods-price">{{item.price|filterCompany}}</span>
+                <span class="goods-price">{{item.goodsPrice|filterCompany}}</span>
               </li>
             </ul>
           </div>
         </div>
         <div id="goods-type">
           <el-tabs>
-            <el-tab-pane label='套餐'>
+            <el-tab-pane label='生活用品'>
               <ul class="type-goods-list">
                 <li
-                  v-for="item of setMeal"
+                  v-for="item of lifeGoods"
                   :key="item.goodsId"
                   @click="addTableData(item)"
                 >
@@ -117,12 +117,12 @@
                   </div>
                   <div class="goods">
                     <span class="goods-name">{{item.goodsName}}</span>
-                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                    <span class="goods-price">{{item.goodsPrice|filterCompany}}</span>
                   </div>
                 </li>
               </ul>
             </el-tab-pane>
-            <el-tab-pane label='小吃'>
+            <el-tab-pane label='零食'>
               <ul class="type-goods-list">
                 <li
                   v-for="item of snakes"
@@ -134,7 +134,7 @@
                   </div>
                   <div class="goods">
                     <span class="goods-name">{{item.goodsName}}</span>
-                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                    <span class="goods-price">{{item.goodsPrice|filterCompany}}</span>
                   </div>
                 </li>
               </ul>
@@ -151,7 +151,7 @@
                   </div>
                   <div class="goods">
                     <span class="goods-name">{{item.goodsName}}</span>
-                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                    <span class="goods-price">{{item.goodsPrice|filterCompany}}</span>
                   </div>
                 </li>
               </ul>
@@ -168,7 +168,7 @@
                   </div>
                   <div class="goods">
                     <span class="goods-name">{{item.goodsName}}</span>
-                    <span class="goods-price">{{item.price|filterCompany}}</span>
+                    <span class="goods-price">{{item.goodsPrice|filterCompany}}</span>
                   </div>
                 </li>
               </ul>
@@ -187,10 +187,10 @@ export default {
     return {
       tableData: [], //pos数据
       oftenGoods: [], //常用商品数据
-      snakes: [], //小食数据
-      setMeal: [], //套餐数据
-      drinks: [], //饮料数据
-      specialOffer: [] //特价商品数据
+      snakes: {}, //零食数据
+      lifeGoods: {}, //生活用品数据
+      drinks: {}, //饮料数据
+      specialOffer: {} //特价商品数据
     };
   },
   filters: {
@@ -218,7 +218,7 @@ export default {
           goodsId: goods.goodsId,
           goodsName: goods.goodsName,
           goodsCount: 1,
-          price: goods.price
+          goodsPrice: goods.goodsPrice
         };
         this.tableData.push(newGoods);
       }
@@ -254,29 +254,22 @@ export default {
     checkout() {
       const len = this.tableData.length;
       if (len !== 0) {
-        // let params = new URLSearchParams();
-        // params.append("content", this.tableData);
-        this.$ajax
-          .post(
-            "http://localhost:3001/postData",
-            {
-              data: this.tableData
-            },
-            {
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+        this.$ajax.put("/api/checkout",{
+              data: this.tableData,
+              headers:{
+                "Content-Type:":"application/x-www-form-urlencoded"
               }
-            }
+            },
           )
           .then(response => {
             this.tableData = [];
-            console.log(response);
             this.$message({
               message: "结账成功",
               type: "success"
             });
           })
           .catch(error => {
+            this.tableData = [];
             this.$message.error(error);
           });
       } else {
@@ -331,25 +324,24 @@ export default {
     }
   },
   created() {
-    this.$ajax
-      .get(
-        "https://www.easy-mock.com/mock/5ce5183882fc6a74749c302f/pos/oftenGoods"
-      )
-      //   this.$ajax.get('http://localhost:3001/oftenGoods')
+        this.$ajax.get('/api/oftenGoods') 
       .then(response => {
         this.oftenGoods = response.data;
       })
       .catch(error => {
         this.$message.error(error.message);
       });
-    this.$ajax
-      .get(
-        "https://www.easy-mock.com/mock/5ce5183882fc6a74749c302f/pos/typeGoods"
-      )
-      //   this.$ajax.get("http://localhost:3001/typeGoods")
+        this.$ajax.get("/api/typeGoods",{
+          params:{
+            snakes:'零食',
+            lifeGoods:'生活用品',
+            drinks:'饮料',
+            specialOffer:'特价'
+          }
+        })
       .then(response => {
         this.snakes = response.data[0];
-        this.setMeal = response.data[1];
+        this.lifeGoods = response.data[1];
         this.drinks = response.data[2];
         this.specialOffer = response.data[3];
       })

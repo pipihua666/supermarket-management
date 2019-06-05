@@ -14,9 +14,6 @@
                 <el-button type='warning' icon="el-icon-delete" round @click='clear'>清空</el-button>
             </label>
             <label for="#" class="labelRight">
-                <el-button type='primary' icon="el-icon-remove-outline" @click='showReduceForm'>出库</el-button>
-            </label>
-            <label for="#" class="labelRight">
                 <el-button type='primary' icon="el-icon-circle-plus-outline" @click='showAddForm'>入库</el-button>
             </label>
         </div>
@@ -43,7 +40,7 @@
             <el-table-column label='操作' fixed='right' size='small' align='center'>
                 <template #default='scope'>
                     <el-button type='primary' plain size='small' @click="showModifyForm(scope.row)">编辑</el-button>
-                    <el-button type='danger' plain size='small' @click="deleteRow(scope.row['id'])">删除</el-button>
+                    <el-button type='danger' plain size='small' @click="deleteRow(scope.row['goodsId'])">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -78,7 +75,7 @@
                 </el-form-item>
                 <el-form-item label='货品类别：' prop='goodsCategory' label-width='6rem'>
                     <el-select v-model="addForm.goodsCategory" placeholder="请选择货品的类别">
-                        <el-option  v-for='item of inputCategories' :key='item' :label='item' value='item'></el-option>
+                        <el-option  v-for='item of inputCategories' :key='item' :label='item' :value='item'></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label='过期时间： ' prop='goodsTime' label-width='6rem'>
@@ -92,7 +89,7 @@
         </el-dialog>
 
         <!-- reduceForm -->
-        <el-dialog title="出库" :visible.sync='reduceFormVisible'   @close="resetForm('reduceForm')" width='25%' >
+        <!-- <el-dialog title="出库" :visible.sync='reduceFormVisible'   @close="resetForm('reduceForm')" width='25%' >
             <el-form :model="reduceForm" :rules="rules" ref='reduceForm'>
                 <el-form-item label='货品编号：' prop='goodsId' label-width='6rem'>
                     <el-input v-model="reduceForm.goodsId" placeholder="请输入货品编号"></el-input>
@@ -108,7 +105,7 @@
                 <el-button type='danger' @click='reduceFormVisible = false'>取消</el-button>
                 <el-button type='success' @click="reduceFormData">添加</el-button>
             </div>
-        </el-dialog>
+        </el-dialog> -->
 
         <!-- 编辑货品 -->
         <el-dialog title="编辑商品" :visible.sync=' modifyFormVisible'  @close="resetForm('modifyForm')" width='42%'>
@@ -127,7 +124,7 @@
                 </el-form-item>
                 <el-form-item label='货品类别：' prop='goodsCategory' label-width='6rem'>
                     <el-select v-model="modifyForm.goodsCategory" placeholder="请选择货品的类别">
-                        <el-option  v-for='item of inputCategories' :key='item' :label='item' value='item'></el-option>
+                        <el-option  v-for='item of inputCategories' :key='item' :label='item' :value='item'></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label='过期时间： ' prop='goodsTime' label-width='6rem'>
@@ -160,7 +157,7 @@ export default {
             //
             inputName:'',//搜索框
             inputCategory:'',//搜索框
-            inputCategories:['嘎嘎','饮料','其他'],//搜索框
+            inputCategories:['生活用品','零食','其他'],//搜索框
             //
             addFormVisible:false,  //添加数据dialog
             modifyFormVisible:false, //修改数据dialog
@@ -170,7 +167,7 @@ export default {
             addForm:{ //addForm的数据
                 goodsId:'',
                 goodsName:'',
-                goodsNumber:'',
+                goodsCount:'',
                 goodsPrice:'',
                 goodsCategory:'',
                 goodsTime:''
@@ -178,7 +175,7 @@ export default {
             modifyForm:{  //modifyForm数据
                 goodsId:'',
                 goodsName:'',
-                goodsNumber:'',
+                goodsCount:'',
                 goodsPrice:'',
                 goodsCategory:'',
                 goodsTime:''
@@ -186,18 +183,17 @@ export default {
             reduceForm:{ //redecueForm数据
                 goodsId:'',
                 goodsName:'',
-                goodsNumber:''
+                goodsCount:''
             },
             //
             rules:{ //form表单的规则
                 goodsId:[
                     { required: true, message: '请填入编号', trigger: 'blur' },
-                    {type:'number',message:'请填入数字',trigger:'blur'}
                 ],
                 goodsName:[
                     {required:true,message:'请填入名称',trigger:'blur'},
                 ],
-                goodsNumber:[
+                goodsCount:[
                     { required: true, message: '请填入数量', trigger: 'blur' },
                     {type:'number',message:'请填入数字',trigger:'blur'}
                 ],
@@ -214,32 +210,49 @@ export default {
             },
             //分页数据
             currentPage:1,//默认显示第几页
-            totalCount:2,//根据数据获取总长度
+            totalCount:8,//根据数据获取总长度
             pageSizes:[2,4,6,8],//设置每页显示的数据条数
-            pageSize:1//默认每页显示的条数
+            pageSize:8//默认每页显示的条数
         };
     },
     methods:{
         search(){
-            const searchParams={
-                inputName:this.inputName,
-                inputCategories:this.inputCategory
-            };
-            this.$ajax.get('/search',{
-                params:searchParams,
-                timeout:1000
-            })
-            .then((response)=>{
-                if(response.status==200){
-                    this.tableData=response.data;
-                }else{
-                    this.tableData=[];
-                    this.$message.error('查询出错，请重新查询');
-                }
-            })
-            .catch((error)=>{
-                this.$message.error(error.message);
-            })
+            if(!this.inputName==''||!this.inputCategory==''){
+                this.$ajax.get('/api/search',{
+                    params:{
+                        inputName:this.inputName,
+                        inputCategory:this.inputCategory
+                    },
+                    timeout:1000
+                })
+                .then((response)=>{
+                    let arr = Object.keys(response.data);
+                    if((response.status == 200)&&(arr.length>0)){
+                        this.goodsData = response.data;
+                        // this.getTableData();//这里并没有改变原始数据不用更新
+                        this.$message({
+                            type:'success',
+                            message:'查询数据成功'
+                        });
+                    }
+                    else{
+                        this.goodsData = [];
+                        this.$message({
+                            type:'warning',
+                            message:'查询数据不存在'
+                        });
+                    }
+                })
+                .catch((error)=>{
+                    this.$message.error(error.message);
+                })
+            }else{
+                this.getTableData();
+                this.$message({
+                    type:'error',
+                    message:'请输入你需要查询的商品'
+                })
+            }
         },
         clear(){  //清空查询的内容
             this.inputName='';
@@ -264,12 +277,13 @@ export default {
                 type:'warning',
             })
             .then(()=>{
-                this.$ajax.delete('/deleteRow',{
+                this.$ajax.delete('/api/deleteRow',{
                     params:{
                         id:deleteId
                     }
                 })
                 .then(()=>{
+                    this.getTableData();
                     this.$message({
                         message:'删除成功',
                         type:'success'
@@ -286,56 +300,60 @@ export default {
         },
         addFormData(){
             const addFormParams=this.addForm;
-            this.$ajax.post('/addForm',{
+            this.$ajax.post('/api/addForm',{
                 data:addFormParams,
                 timeout:1000
             })
             .then((response)=>{
                 this.tableData=response.data;
                 this.addFormVisible==true;
-                this.$message({
-                    message:'添加数据成功',
-                    type:'success'
-                })
+                this.getTableData();
             })
             .catch((error)=>{
                 this.$message.error(error.message);
             })
+            this.addFormVisible=false;
+        this.$message({
+            message:'添加数据成功',
+            type:'success'
+        })
         },
         modifyFormData(){
             const modifyFormParams=this.modifyForm;
-            this.$ajax.put('/modifyForm',{
+            this.$ajax.put('/api/modifyForm',{
                 data:modifyFormParams,
                 timeout:1000
             })
             .then((response)=>{
                 this.tableData=response.data;
                 this.modifyFormVisible=true;
+                this.getTableData();
                 this.$message({
                     message:'更改数据成功',
                     type:'success'
-                })
+                });
+                this.modifyFormVisible=false;
             })
             .catch((error)=>{
                 this.$message.error(error.message);
             })
         },
-        reduceFormData(){
-            const reduceFormParams=this.reduceForm;
-            this.$ajax.put('reduceForm',{
-                params:reduceFormParams,
-                timeout:1000
-            })
-            .then((response)=>{
-                this.tableData=response.data;
-                this.$message({
-                    message:'出库成功'
-                })
-            })
-            .catch((error)=>{
-                this.$message.error(`出库失败，原因是：${error.message}`);
-            })
-        },
+        // reduceFormData(){
+        //     const reduceFormParams=this.reduceForm;
+        //     this.$ajax.put('reduceForm',{
+        //         params:reduceFormParams,
+        //         timeout:1000
+        //     })
+        //     .then((response)=>{
+        //         this.tableData=response.data;
+        //         this.$message({
+        //             message:'出库成功'
+        //         })
+        //     })
+        //     .catch((error)=>{
+        //         this.$message.error(`出库失败，原因是：${error.message}`);
+        //     })
+        // },
         //分页
         handleSizeChange(value){
             this.pageSize=value;
@@ -347,7 +365,7 @@ export default {
             this.getData(this.pageSize,(value)*(this.pageSize));
         },
         getData(pageSize,pageCount){
-            this.$ajax.post('https://www.easy-mock.com/mock/5ce5183882fc6a74749c302f/pos/goodsData',{
+            this.$ajax.post('/api/goodsData',{
                 orgCode:1,
                    // 每页显示的条数
                 PageSize:pageSize,
@@ -358,19 +376,22 @@ export default {
                 this.tableData=response.data.body;
                 this.totalCount=response.data.body.length;
             })
+        },
+        getTableData(){
+            this.$ajax.get('/api/goodsData')
+            .then((response)=>{
+                this.goodsData=response.data;
+             })
+            .catch((error)=>{
+                this.$message({
+                    message:error.message,
+                    type:'error'
+                 });
+            });
         }
     },
     created(){
-        this.$ajax.get('https://www.easy-mock.com/mock/5ce5183882fc6a74749c302f/pos/goodsData')
-        .then((response)=>{
-            this.goodsData=response.data;
-        })
-        .catch((error)=>{
-            this.$message({
-                message:error.message,
-                type:'error'
-            });
-        });
+        this.getTableData();   
     }
 }
 </script>
