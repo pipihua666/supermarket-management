@@ -2,7 +2,7 @@
   <nav class="left-nav">
     <ul>
       <li>
-        <router-link to='/index'>
+        <router-link to='/'>
           <i class="iconfont icon-shouye"></i>
           <div>首页</div>
         </router-link>
@@ -36,7 +36,8 @@
 </template>
 
 <script>
-export default {};
+export default {
+};
 </script>
 
 <style lang="scss">

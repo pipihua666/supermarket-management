@@ -14,9 +14,16 @@ module.exports=function(app){
     app.get('/search', function (req, res) {
         let name = req.query.inputName;
         let category = req.query.inputCategory;
-        let sql = `select * from goodsdata where (goodsName = ? or goodsCategory = ?)`;
-        //存在sql注入
+        let sql = '';
+        // let vagueName = '%'+name+'%';
+        // let vagueCategory = '%'+category+'%';
+        if((name&&!category)||(!name&&category)){
+             sql = `select * from goodsdata where (goodsName like ? or goodsCategory like ?)`;
+        }else{
+            sql = `select * from goodsdata where (goodsName like ? and goodsCategory like ?)`;
+        }
         db.query(sql, [name, category], function (results, fields) {
+            console.table(results);
             res.status(200).json(results);
         });
     });

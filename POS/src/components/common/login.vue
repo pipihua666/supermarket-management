@@ -1,14 +1,17 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" label-width="80px" :rules="loginRules" class="login-form" status-icon='true'>
+    <el-form ref="loginForm" :model="loginForm" label-width="80px" :rules="loginRules" class="login-form" status-icon>
 
       <h4 class="title">{{title}}</h4>
 
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username"  prefix-icon="el-icon-user" placeholder="账号" autofocus='true'></el-input>
+        <el-input v-model="loginForm.username"  prefix-icon="el-icon-user" placeholder="账号:pipihua666" autofocus></el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="loginForm.password" prefix-icon="el-icon-key" placeholder="密码" type="password" show-password='true'></el-input>
+        <el-input v-model="loginForm.password" prefix-icon="el-icon-key" placeholder="密码:123456" type="password" show-password></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-checkbox v-model="isRemenber">记住密码</el-checkbox>
       </el-form-item>
 
       <div class="login">
@@ -45,13 +48,15 @@ export default {
       title:'超市管理系统',
       loginForm: {
         username: "",
-        password: ""
+        password: "",
+        remenber:false
       },
       loginRules:{
-        username: [{ required: true, trigger: 'blur', validator: validateUsername ,},{min:6,max:20,message:'长度需要大于6,小于20'}],
+        username: [{ required: true, trigger: 'blur', validator: validateUsername ,}],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
-      isloading:false
+      isloading:false,
+      isRemenber:false,
     };
   },
   methods: {
@@ -61,6 +66,9 @@ export default {
       this.$refs['loginForm'].validate((isOK)=>{ 
         if(isOK){
           let that = this;
+          if(this.isRemenber){
+            this.loginForm.remenber=true;
+          }
             this.isloading = true;
             this.$ajax({
               url:'/api/login',
@@ -69,10 +77,11 @@ export default {
             })
             .then(response => {
                 //模拟异步请求时间
+                console.log(response.data);
                 setTimeout(function(){
                   that.isloading = false;
                   that.$router.push({path:"/goods"})
-                },3000)
+                },2000)
             })
             .catch((error) => {
                 console.log(error);
@@ -85,8 +94,20 @@ export default {
     //重置表单
     reset(ref){
       this.$refs[ref].resetFields();
+    },
+    getToken(){
+      if(document.cookie.includes('password')){
+        let cookie=document.cookie.split(';');
+        let username = cookie[0].split('=')[1];
+        let password = cookie[1].split('=')[1];
+        this.loginForm.username = username;
+        this.loginForm.password = password;
+      }
     }
   },
+  mounted:function(){
+    this.getToken();
+  }
 };
 </script>
 

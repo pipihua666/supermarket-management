@@ -37,11 +37,14 @@ module.exports=function(app){
     app.put('/checkout', function (req, res) {
         let goods =req.body.data;
         let sql = '';
-        for(let i=0,len=goods.length;i<len;i++){
-            sql +=`update goodsdata set goodsCount = goodsCount - ${goods[i].goodsCount} where goodsId = ${goods[i].goodsId};`;
+        // let selectSql = `select goodsCount from goodsdata where goodsId = ?`
+
+        if(goods.length>0){
+            for(let i=0,len=goods.length;i<len;i++){
+                sql += `update goodsdata set goodsCount = goodsCount - ${goods[i].goodsCount} where goodsId = ${goods[i].goodsId};`; 
+            }
         }
-        db.query(sql,[],function(results,fields){
-            console.table(results);
+        db.query(sql, [], function (results, fields) {
             res.status(200).json(results);
         });
     })

@@ -25,7 +25,7 @@
     ** enter the Node-API directory
     cd Node-API
 
-    **install the api dependencied
+    **install the api dependencies
     npm install
 
     **server will listen to localhost:3001
@@ -65,7 +65,8 @@
 ```
 
     ** vue:
-        1. 打包上线npm run build发现网页404，原因一：config/index.js的build属性下的assetsPublicPath: './'需要设置为相对路径，原因二：@/router/index.js的mode:'history', 配置history模式需要和后端很好的配合才好使用。
+        1. 打包上线npm run build发现网页404，原因一：config/index.js的build属性下的assetsPublicPath: './'需要设置为相对路径，原因二：@/router/index.js的mode:'history', 配置history模式需要和后端很好的配合才好使用
+        2. 使用vue-router的全局导航守卫需要放在vue实例挂载之前才能使用，要小心使用next(),需要使用之后路由才能resolve
 
     ** mysql：
         1. Client does not support authentication protocol requested by server; conside
@@ -98,7 +99,6 @@
         2.通过设置cookie和session，加上vue-router提供的导航守卫配合路由重定向，实现登陆页面的设置：
             2.1 如果没有登陆则重定向到登陆页面，如果登陆了则可以之间访问网页.
             2.2 相应的文件(/build/utils.js封装自己的cookie函数，@/components/common/login.vue设置登陆组件,@router/login这是导航守卫)
-            2.3 使用了js-cookie中间件
 
         3. goods页面实现分页（updating）
 

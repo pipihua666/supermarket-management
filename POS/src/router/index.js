@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/components/pages/Index'
 import Pos from '@/components/pages/Pos'
 import Goods from '@/components/pages/Goods'
-import User from '@/components/pages/User'
+import Index from '@/components/pages/Index'
 import Help from '@/components/pages/Help'
 import error from '@/components/common/error'
 import Login from '@/components/common/login'
@@ -14,10 +13,10 @@ export default new Router({
   // mode:'history', //需要和后端很好的配合才好
   routes: [
     {
-      path: '/',
-      name: 'Login',
-      component: Login,
-      alias:'/login',
+      path:'/',
+      component:Index,
+      name:'Index',
+      alias:'/index'
     },
     {
       path:'/pos',
@@ -31,18 +30,13 @@ export default new Router({
     },
     {
       path:'/user',
-      name:'User',
-      component:User
+      name:'Login',
+      component:Login
     },
     {
       path:'/help',
       name:'Help',
       component:Help
-    },
-    {
-      path:'/index',
-      name:'Index',
-      component:Index
     },
     {
       path:'*',
