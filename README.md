@@ -2,6 +2,14 @@
 
 > 此作品仅供参考，如果喜欢，请点一下❤❤ Thanks
 
+![Image text](https://github.com/PipiHua/Supermarket_Management_System/blob/master/POS/src/assets/images/login.png)
+
+![Image text](https://github.com/PipiHua/Supermarket_Management_System/blob/master/POS/src/assets/images/loginSuccess.png)
+
+![Image text](https://github.com/PipiHua/Supermarket_Management_System/blob/master/POS/src/assets/images/pos.png)
+
+![Image text](https://github.com/PipiHua/Supermarket_Management_System/blob/master/POS/src/assets/images/goods.png)
+
 # First 
 
 ``` 
