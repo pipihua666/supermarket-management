@@ -18,12 +18,15 @@ Vue.component('lottie',lottie);
 router.beforeEach((to, from, next) => {; //从cookies中获取是否已登陆过的信息
   if (document.cookie.length!==0) {
     next();
+    console.log(`欢迎你：${document.cookie.split(';')[0].split('=')[1]}`);
   } else {
-    alert('请输入账号名和密码');
     if (to.path == '/user') {
       next();
     } else {
       next('/user');
+      if(next('/user')){
+        alert('请输入用户名和密码');
+      }
     }
   }
 })

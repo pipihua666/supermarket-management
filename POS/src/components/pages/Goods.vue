@@ -18,7 +18,7 @@
             </label>
         </div>
 
-        <!-- tableData -->
+        <!-- goodsData -->
         <el-table :data='goodsData'  style="width:95%;margin:1rem auto;color:" stripe size='small' row-class-name='column-class' empty-text="亲，暂时没有数据哦" element-loading-text="拼命加载中">
             <el-table-column prop='goodsId' label="货品编号" width='200' align='center'></el-table-column>
             <el-table-column prop='goodsName' label='货品名字' width='200' align='center'></el-table-column>
@@ -48,12 +48,12 @@
              <el-pagination
                 layout="total,sizes,prev, pager, next, jumper"
                 background
-                :total="totalCount"
+                :total='totalCount'
                 @size-change='handleSizeChange'
                 @current-change='handleCurrentChange'
                 :current-page='currentPage'
-                :page-sizes='pageSizes'
                 :page-size='pageSize'
+                :page-sizes='pageSizes'
                >
              </el-pagination>
         </div>
@@ -157,7 +157,7 @@ export default {
             //
             inputName:'',//搜索框
             inputCategory:'',//搜索框
-            inputCategories:['生活用品','零食','其他'],//搜索框
+            inputCategories:['生活用品','零食','饮料','特价','其他'],//搜索框
             //
             addFormVisible:false,  //添加数据dialog
             modifyFormVisible:false, //修改数据dialog
@@ -209,10 +209,14 @@ export default {
                 ]
             },
             //分页数据
-            currentPage:1,//默认显示第几页
-            totalCount:8,//根据数据获取总长度
-            pageSizes:[2,4,6,8],//设置每页显示的数据条数
-            pageSize:8//默认每页显示的条数
+            currentPage:1,//当前显示第几页
+            totalCount:9,//根据数据获取总长度
+            pageSize:8,//默认每页显示的条数
+            pageSizes:[6,8],
+            prePage:0,
+
+            //文件上传
+            fileList:[],
         };
     },
     methods:{
@@ -229,7 +233,6 @@ export default {
                     let arr = Object.keys(response.data);
                     if((response.status == 200)&&(arr.length>0)){
                         this.goodsData = response.data;
-                        // this.getTableData();//这里并没有改变原始数据不用更新
                         this.$message({
                             type:'success',
                             message:'查询数据成功'
@@ -247,7 +250,7 @@ export default {
                     this.$message.error(error.message);
                 })
             }else{
-                this.getTableData();
+                this.getData(this.currentPage-1,this.pageSize);
                 this.$message({
                     type:'error',
                     message:'请输入你需要查询的商品'
@@ -283,7 +286,7 @@ export default {
                     }
                 })
                 .then(()=>{
-                    this.getTableData();
+                    this.getData(this.currentPage-1,this.pageSize);
                     this.$message({
                         message:'删除成功',
                         type:'success'
@@ -305,9 +308,9 @@ export default {
                 timeout:1000
             })
             .then((response)=>{
-                this.tableData=response.data;
+                this.goodsData=response.data;
                 this.addFormVisible==true;
-                this.getTableData();
+                this.getData(this.currentPage-1,this.pageSize);
             })
             .catch((error)=>{
                 this.$message.error(error.message);
@@ -325,9 +328,9 @@ export default {
                 timeout:1000
             })
             .then((response)=>{
-                this.tableData=response.data;
+                this.goodsData=response.data;
                 this.modifyFormVisible=true;
-                this.getTableData();
+                this.getData(this.currentPage-1,this.pageSize);
                 this.$message({
                     message:'更改数据成功',
                     type:'success'
@@ -345,7 +348,7 @@ export default {
         //         timeout:1000
         //     })
         //     .then((response)=>{
-        //         this.tableData=response.data;
+        //         this.goodsData=response.data;
         //         this.$message({
         //             message:'出库成功'
         //         })
@@ -355,43 +358,47 @@ export default {
         //     })
         // },
         //分页
-        handleSizeChange(value){
-            this.pageSize=value;
-            this.getData(value,1);
-            this.currentPage=1;
+        handleSizeChange(value){//pagesize页数改变时的回调
+            this.pageSize = value;
+            this.getData(0,value);
+            this.currentPage = 1;
         },
-        handleCurrentChange(value){
+        handleCurrentChange(value){ //currentPage当前页改变时的回调
             this.currentPage=value;
-            this.getData(this.pageSize,(value)*(this.pageSize));
+            this.getData(this.pageSize*(value-1),(value)*(this.pageSize));
         },
-        getData(pageSize,pageCount){
+        getData(pageSize,currentPage){
             this.$ajax.post('/api/goodsData',{
-                orgCode:1,
-                   // 每页显示的条数
-                PageSize:pageSize,
-                   // 显示第几页
-                currentPage:pageCount,
+                data:{
+                    // 每页显示的条数
+                    pageSize:pageSize,
+                    // 显示第几页
+                    currentPage:currentPage
+                }
             })
-            .then((response)=>{
-                this.tableData=response.data.body;
-                this.totalCount=response.data.body.length;
-            })
-        },
-        getTableData(){
-            this.$ajax.get('/api/goodsData')
             .then((response)=>{
                 this.goodsData=response.data;
-             })
+            })
             .catch((error)=>{
                 this.$message({
-                    message:error.message,
-                    type:'error'
-                 });
-            });
-        }
+                    type:'error',
+                    message:error
+                })
+            })
+        },
     },
     created(){
-        this.getTableData();   
+        this.getData(this.prePage,this.pageSize);
+    },
+    updated(){
+        this.$ajax.get('/api/getCount').then((res)=>{
+            this.totalCount = res.data.length;
+        }).catch((err)=>{
+            this.$message({
+                type:"error",
+                message:err
+            });
+        })
     }
 }
 </script>

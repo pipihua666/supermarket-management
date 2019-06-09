@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" label-width="80px" :rules="loginRules" class="login-form" status-icon>
+    <el-form ref="loginForm" :model="loginForm" label-width="80px" :rules="loginRules" class="login-form" status-icon v-if="!haveCookie">
 
       <h4 class="title">{{title}}</h4>
 
@@ -18,8 +18,17 @@
         <el-button type='danger' @click="reset('loginForm')">重置</el-button>
         <el-button type="primary" @click="login" :loading="isloading">登录</el-button>
       </div>
-      
     </el-form>
+
+    <div v-if="haveCookie" class="login-user">
+        <img src="@/assets/images/user.jpg" alt="">
+        <div class="login-user-right">
+          <div class="login-user-name"><span class="welcome">欢迎你:</span><i class="iconfont icon-yonghu"></i>{{username}}</div>
+          <div class="login-user-time">登陆时间：</div>
+          <time>{{currentTime}}</time>
+          <el-button type='primary' @click='quit'>退出登陆</el-button>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -57,6 +66,9 @@ export default {
       },
       isloading:false,
       isRemenber:false,
+      haveCookie:false,
+      username:document.cookie.split(';')[0].split('=')[1],
+      currentTime:new Date()
     };
   },
   methods: {
@@ -68,6 +80,8 @@ export default {
           let that = this;
           if(this.isRemenber){
             this.loginForm.remenber=true;
+          }else{
+            this.loginForm.remenber = false;
           }
             this.isloading = true;
             this.$ajax({
@@ -77,8 +91,9 @@ export default {
             })
             .then(response => {
                 //模拟异步请求时间
-                console.log(response.data);
+                // console.log(response.data);
                 setTimeout(function(){
+                  that.haveCookie =true;
                   that.isloading = false;
                   that.$router.push({path:"/goods"})
                 },2000)
@@ -103,10 +118,13 @@ export default {
         this.loginForm.username = username;
         this.loginForm.password = password;
       }
+    },
+    quit(){
+      this.haveCookie = false;
     }
   },
   mounted:function(){
-    this.getToken();
+      this.getToken();
   }
 };
 </script>
@@ -152,6 +170,44 @@ export default {
           margin-left: 2rem;
         }
       }
+  }
+  .login-user{
+    position: absolute;
+    width: 40%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-25%);
+    display: flex;
+    flex: 0 1 auto;
+    box-shadow: 4px 4px 3px 4px skyblue;
+    .login-user-right{
+      text-align: center;
+    }
+    .login-user-name{
+      letter-spacing:3px;
+      border-bottom:1px dotted black;
+      margin-bottom: 2rem;
+    }
+    .login-user-time{
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom:1rem;
+    }
+    .welcome{
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    time{
+      line-height: 2rem;
+    }
+    .el-button{
+      display: block;
+      width: 80%;
+      margin: 0 auto;
+      margin-top: 2rem;
+    }
   }
 } 
 

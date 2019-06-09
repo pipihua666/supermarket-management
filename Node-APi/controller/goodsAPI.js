@@ -5,11 +5,19 @@ module.exports=function(app){
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    app.get('/goodsData', function (req, res) {
-        db.query('select * from goodsdata', [], function (results, fields) {
-            res.status(200).json(results);
+    app.post('/goodsData', function (req, res) {
+        let pageSize = req.body.data.pageSize;
+        let currentPage = req.body.data.currentPage;
+        db.query(`select * from goodsdata limit ?, ? `, [pageSize,currentPage], function (results, fields) {
+            res.status(200).json(results)
         })
     });
+
+    app.get('/getCount',function(req,res){
+        db.query('select * from goodsdata',[],function(results){
+            res.status(200).json(results);
+        })
+    })
 
     app.get('/search', function (req, res) {
         let name = req.query.inputName;
@@ -23,7 +31,6 @@ module.exports=function(app){
             sql = `select * from goodsdata where (goodsName like ? and goodsCategory like ?)`;
         }
         db.query(sql, [name, category], function (results, fields) {
-            console.table(results);
             res.status(200).json(results);
         });
     });

@@ -6,8 +6,10 @@
 
     <!-- 主内容区域 -->
     <transition name="fade" mode="out-in">
-      <main class="main">
-        <router-view/>
+      <main class="main"> 
+        <keep-alive>
+                <router-view></router-view>
+        </keep-alive>
       </main>
     </transition>
 

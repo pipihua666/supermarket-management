@@ -1,12 +1,12 @@
 <template>
   <nav class="left-nav">
     <ul>
-      <li>
+      <!-- <li>
         <router-link to='/'>
           <i class="iconfont icon-shouye"></i>
           <div>首页</div>
         </router-link>
-      </li>
+      </li> -->
       <li>
         <router-link to='/pos'>
           <i class="iconfont icon-shouyintai"></i>
