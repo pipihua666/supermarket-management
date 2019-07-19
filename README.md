@@ -57,7 +57,7 @@
 
     ** 技术栈为：Vue,Vue-Router,axios,scss,node-express,mysql
 
-    ** 使用到的组件库：Element-ui,vue-lottie
+    ** 使用到的组件库：Element-ui
 
     ** 使用到的图标库：阿里的iconfont
 
